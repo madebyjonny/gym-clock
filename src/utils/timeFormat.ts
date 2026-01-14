@@ -98,5 +98,7 @@ export function formatIntroCountdown(state: TimerState): string {
   const secondsRemaining = Math.ceil(state.introTimeRemaining / 1000);
   const minutes = Math.floor(secondsRemaining / 60);
   const seconds = secondsRemaining % 60;
-  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  return `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
 }

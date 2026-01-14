@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, StatusBar, Dimensions } from "react-native";
+import { View, StyleSheet, StatusBar } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
@@ -63,7 +64,10 @@ export default function MainScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView
+      style={styles.container}
+      edges={isLandscape ? [] : ["top", "bottom"]}
+    >
       <StatusBar hidden={isLandscape} barStyle="light-content" />
 
       {isLandscape ? (
@@ -85,7 +89,7 @@ export default function MainScreen() {
           onReset={timer.reset}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 

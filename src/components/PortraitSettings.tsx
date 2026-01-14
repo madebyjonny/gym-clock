@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
   },
   controlArea: {
     flexDirection: "row",
-    paddingVertical: 16,
+    paddingVertical: 8,
     gap: 12,
     minHeight: 64,
   },
@@ -576,7 +576,6 @@ const styles = StyleSheet.create({
   },
   hint: {
     alignItems: "center",
-    paddingBottom: 40,
     paddingTop: 8,
   },
   hintText: {
