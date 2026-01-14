@@ -30,8 +30,8 @@ export const colors = {
 
   // UI colors
   textPrimary: "#ffffff",
-  textSecondary: "#888888",
-  textMuted: "#444444",
+  textSecondary: "#aaaaaa",
+  textMuted: "#666666",
 
   // Button colors
   buttonPrimary: "#ff0000",

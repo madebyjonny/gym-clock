@@ -38,4 +38,8 @@ export interface TimerState {
   isWorkPhase: boolean;
   // EMOM specific state
   currentMinute: number;
+  // Countdown intro (3-2-1 before workout starts)
+  countdownIntro: number; // seconds (0 = disabled, typically 3, 5, or 10)
+  isInCountdownIntro: boolean; // true while counting down intro
+  introTimeRemaining: number; // milliseconds remaining in intro
 }

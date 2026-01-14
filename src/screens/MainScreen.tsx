@@ -80,6 +80,7 @@ export default function MainScreen() {
           onTabataChange={timer.setTabata}
           onEmomChange={timer.setEmom}
           onAmrapChange={timer.setAmrap}
+          onCountdownIntroChange={timer.setCountdownIntro}
           onStart={timer.toggle}
           onReset={timer.reset}
         />

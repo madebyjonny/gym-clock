@@ -24,6 +24,7 @@ import {
   formatEmom,
   formatAmrap,
   formatClock,
+  formatIntroCountdown,
 } from "../utils/timeFormat";
 
 interface PortraitSettingsProps {
@@ -33,6 +34,7 @@ interface PortraitSettingsProps {
   onTabataChange: (settings: TabataSettings) => void;
   onEmomChange: (settings: EmomSettings) => void;
   onAmrapChange: (settings: AmrapSettings) => void;
+  onCountdownIntroChange: (seconds: number) => void;
   onStart: () => void;
   onReset: () => void;
 }
@@ -102,6 +104,7 @@ export function PortraitSettings({
   onTabataChange,
   onEmomChange,
   onAmrapChange,
+  onCountdownIntroChange,
   onStart,
   onReset,
 }: PortraitSettingsProps) {
@@ -123,6 +126,15 @@ export function PortraitSettings({
     sub?: { left: string; right: string };
     color: "red" | "blue" | "green" | "yellow";
   } => {
+    // Show countdown intro if active
+    if (state.isInCountdownIntro) {
+      return {
+        time: formatIntroCountdown(state),
+        sub: { left: "GET READY", right: "" },
+        color: "yellow",
+      };
+    }
+
     switch (state.mode) {
       case "clock":
         return { time: clockTime, color: "blue" };
@@ -245,9 +257,27 @@ export function PortraitSettings({
     }
   };
 
+  // Render the countdown intro picker (shared across modes that support it)
+  const renderIntroSetting = () => {
+    const supportsIntro = !["clock", "stopwatch"].includes(state.mode);
+    if (!supportsIntro) return null;
+
+    return (
+      <NumberPicker
+        value={state.countdownIntro}
+        onChange={onCountdownIntroChange}
+        min={0}
+        max={10}
+        step={1}
+        label="Start Delay"
+      />
+    );
+  };
+
   const hasSettings = ["countdown", "tabata", "emom", "amrap"].includes(
     state.mode
   );
+  const hasIntroSetting = !["clock", "stopwatch"].includes(state.mode);
 
   return (
     <View style={styles.container}>
@@ -314,14 +344,19 @@ export function PortraitSettings({
 
         {/* Settings Panel - Fixed height container */}
         <View style={styles.settingsSection}>
-          {hasSettings ? (
-            <>
-              <Text style={styles.sectionLabel}>Settings</Text>
-              <View style={styles.settingsCard}>{renderSettings()}</View>
-            </>
-          ) : (
-            <View style={styles.settingsPlaceholder} />
-          )}
+          <Text style={styles.sectionLabel}>Settings</Text>
+          <ScrollView>
+            {hasSettings || hasIntroSetting ? (
+              <>
+                <View style={styles.settingsCard}>
+                  {renderSettings()}
+                  {renderIntroSetting()}
+                </View>
+              </>
+            ) : (
+              <View style={styles.settingsPlaceholder} />
+            )}
+          </ScrollView>
         </View>
 
         {/* Control Buttons - Always at bottom */}
@@ -374,6 +409,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   clockContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
   },
   subDisplayRow: {
@@ -390,6 +427,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   bottomControls: {
+    height: "70%",
     paddingHorizontal: 20,
     paddingTop: 16,
     borderTopWidth: 1,
@@ -399,11 +437,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   settingsSection: {
-    height: 250,
+    flex: 1,
     marginBottom: 16,
   },
   settingsPlaceholder: {
-    height: 250,
+    height: "30%",
   },
   sectionLabel: {
     fontFamily: "System",
@@ -479,8 +517,9 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   pickerValue: {
-    fontFamily: "Digital7Mono",
-    fontSize: 22,
+    fontFamily: "System",
+    fontSize: 18,
+    fontWeight: "600",
     color: colors.textPrimary,
     minWidth: 70,
     textAlign: "center",

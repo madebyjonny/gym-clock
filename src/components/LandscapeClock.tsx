@@ -15,6 +15,7 @@ import {
   formatEmom,
   formatAmrap,
   formatClock,
+  formatIntroCountdown,
 } from "../utils/timeFormat";
 import { colors, shadows } from "../theme/colors";
 
@@ -50,15 +51,31 @@ export function LandscapeClock({
   }, [state.mode]);
 
   const getDisplayContent = () => {
+    // Show countdown intro if active
+    if (state.isInCountdownIntro) {
+      return {
+        main: formatIntroCountdown(state),
+        sub: { phase: "GET READY", round: "" },
+        color: "yellow" as const,
+        isIntro: true,
+      };
+    }
+
     switch (state.mode) {
       case "clock":
-        return { main: clockTime, sub: null, color: "blue" as const };
+        return {
+          main: clockTime,
+          sub: null,
+          color: "blue" as const,
+          isIntro: false,
+        };
 
       case "stopwatch":
         return {
           main: formatStopwatch(state),
           sub: null,
           color: "red" as const,
+          isIntro: false,
         };
 
       case "countdown":
@@ -66,6 +83,7 @@ export function LandscapeClock({
           main: formatCountdown(state),
           sub: null,
           color: "red" as const,
+          isIntro: false,
         };
 
       case "tabata": {
@@ -75,6 +93,7 @@ export function LandscapeClock({
           main: tabata.time,
           sub: { phase: tabata.phase, round: tabata.round },
           color,
+          isIntro: false,
         };
       }
 
@@ -84,6 +103,7 @@ export function LandscapeClock({
           main: emom.time,
           sub: { phase: "EMOM", round: emom.minute },
           color: "blue" as const,
+          isIntro: false,
         };
       }
 
@@ -92,10 +112,16 @@ export function LandscapeClock({
           main: formatAmrap(state),
           sub: { phase: "AMRAP", round: "" },
           color: "yellow" as const,
+          isIntro: false,
         };
 
       default:
-        return { main: "00:00", sub: null, color: "red" as const };
+        return {
+          main: "00:00",
+          sub: null,
+          color: "red" as const,
+          isIntro: false,
+        };
     }
   };
 
