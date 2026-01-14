@@ -270,6 +270,7 @@ export function PortraitSettings({
         max={10}
         step={1}
         label="Start Delay"
+        format={(v) => `0:${v.toString().padStart(2, "0")}`}
       />
     );
   };

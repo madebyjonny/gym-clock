@@ -86,15 +86,17 @@ export function formatClock(): string {
 
 /**
  * Format the countdown intro display
- * Shows just the seconds remaining (e.g., "3", "2", "1")
+ * Shows time in MM:SS format (e.g., "00:10", "00:09", "00:01")
  * @param state - Timer state with introTimeRemaining
- * @returns The seconds remaining as a string, or "GO" when complete
+ * @returns The time remaining in MM:SS format
  */
 export function formatIntroCountdown(state: TimerState): string {
   if (!state.isInCountdownIntro) {
-    return "GO";
+    return "00:00";
   }
-  // Ceiling so we show "3" from 3000ms down to 2001ms, "2" from 2000ms to 1001ms, etc.
+  // Ceiling so we show "10" from 10000ms down to 9001ms, etc.
   const secondsRemaining = Math.ceil(state.introTimeRemaining / 1000);
-  return secondsRemaining.toString();
+  const minutes = Math.floor(secondsRemaining / 60);
+  const seconds = secondsRemaining % 60;
+  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
