@@ -28,7 +28,7 @@ export default function MainScreen() {
       const orientation = await ScreenOrientation.getOrientationAsync();
       setIsLandscape(
         orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
-          orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
+          orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
       );
     };
 
@@ -40,9 +40,9 @@ export default function MainScreen() {
         const orientation = event.orientationInfo.orientation;
         setIsLandscape(
           orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
-            orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
+            orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
         );
-      }
+      },
     );
 
     return () => {
@@ -81,7 +81,7 @@ export default function MainScreen() {
           state={timer.state}
           onModeChange={timer.setMode}
           onCountdownChange={timer.setCountdown}
-          onTabataChange={timer.setTabata}
+          onIntervalsChange={timer.setIntervals}
           onEmomChange={timer.setEmom}
           onAmrapChange={timer.setAmrap}
           onCountdownIntroChange={timer.setCountdownIntro}

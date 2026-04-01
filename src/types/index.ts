@@ -2,11 +2,11 @@ export type TimerMode =
   | "clock"
   | "stopwatch"
   | "countdown"
-  | "tabata"
+  | "intervals"
   | "emom"
   | "amrap";
 
-export interface TabataSettings {
+export interface IntervalsSettings {
   workTime: number; // seconds
   restTime: number; // seconds
   rounds: number;
@@ -30,10 +30,10 @@ export interface TimerState {
   isRunning: boolean;
   currentTime: number; // milliseconds
   countdown: CountdownSettings;
-  tabata: TabataSettings;
+  intervals: IntervalsSettings;
   emom: EmomSettings;
   amrap: AmrapSettings;
-  // Tabata specific state
+  // Intervals specific state
   currentRound: number;
   isWorkPhase: boolean;
   // EMOM specific state

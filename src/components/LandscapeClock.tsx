@@ -11,7 +11,7 @@ import { TimerState, TimerMode } from "../types";
 import {
   formatStopwatch,
   formatCountdown,
-  formatTabata,
+  formatIntervals,
   formatEmom,
   formatAmrap,
   formatClock,
@@ -86,12 +86,12 @@ export function LandscapeClock({
           isIntro: false,
         };
 
-      case "tabata": {
-        const tabata = formatTabata(state);
+      case "intervals": {
+        const intervals = formatIntervals(state);
         const color = state.isWorkPhase ? ("green" as const) : ("red" as const);
         return {
-          main: tabata.time,
-          sub: { phase: tabata.phase, round: tabata.round },
+          main: intervals.time,
+          sub: { phase: intervals.phase, round: intervals.round },
           color,
           isIntro: false,
         };
@@ -128,7 +128,7 @@ export function LandscapeClock({
   const display = getDisplayContent();
   const showControls = state.mode !== "clock";
 
-  const clockFontSize = 250;
+  const clockFontSize = 200;
   const subFontSize = Math.max(28, clockFontSize * 0.22);
 
   return (

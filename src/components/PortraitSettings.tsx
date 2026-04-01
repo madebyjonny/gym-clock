@@ -10,7 +10,7 @@ import {
 import {
   TimerMode,
   TimerState,
-  TabataSettings,
+  IntervalsSettings,
   EmomSettings,
   AmrapSettings,
   CountdownSettings,
@@ -20,7 +20,7 @@ import { LCDDisplay } from "./LCDDisplay";
 import {
   formatStopwatch,
   formatCountdown,
-  formatTabata,
+  formatIntervals,
   formatEmom,
   formatAmrap,
   formatClock,
@@ -31,7 +31,7 @@ interface PortraitSettingsProps {
   state: TimerState;
   onModeChange: (mode: TimerMode) => void;
   onCountdownChange: (settings: CountdownSettings) => void;
-  onTabataChange: (settings: TabataSettings) => void;
+  onIntervalsChange: (settings: IntervalsSettings) => void;
   onEmomChange: (settings: EmomSettings) => void;
   onAmrapChange: (settings: AmrapSettings) => void;
   onCountdownIntroChange: (seconds: number) => void;
@@ -43,7 +43,7 @@ const MODES: { value: TimerMode; label: string }[] = [
   { value: "clock", label: "Clock" },
   { value: "stopwatch", label: "Stopwatch" },
   { value: "countdown", label: "Timer" },
-  { value: "tabata", label: "Tabata" },
+  { value: "intervals", label: "Intervals" },
   { value: "emom", label: "EMOM" },
   { value: "amrap", label: "AMRAP" },
 ];
@@ -101,7 +101,7 @@ export function PortraitSettings({
   state,
   onModeChange,
   onCountdownChange,
-  onTabataChange,
+  onIntervalsChange,
   onEmomChange,
   onAmrapChange,
   onCountdownIntroChange,
@@ -142,11 +142,11 @@ export function PortraitSettings({
         return { time: formatStopwatch(state), color: "red" };
       case "countdown":
         return { time: formatCountdown(state), color: "red" };
-      case "tabata": {
-        const tabata = formatTabata(state);
+      case "intervals": {
+        const intervals = formatIntervals(state);
         return {
-          time: tabata.time,
-          sub: { left: tabata.phase, right: tabata.round },
+          time: intervals.time,
+          sub: { left: intervals.phase, right: intervals.round },
           color: state.isWorkPhase ? "green" : "red",
         };
       }
@@ -195,30 +195,36 @@ export function PortraitSettings({
           />
         );
 
-      case "tabata":
+      case "intervals":
         return (
           <>
             <NumberPicker
-              value={state.tabata.workTime}
-              onChange={(v) => onTabataChange({ ...state.tabata, workTime: v })}
+              value={state.intervals.workTime}
+              onChange={(v) =>
+                onIntervalsChange({ ...state.intervals, workTime: v })
+              }
               min={5}
-              max={120}
-              step={5}
+              max={600}
+              step={10}
               label="Work"
               format={formatSeconds}
             />
             <NumberPicker
-              value={state.tabata.restTime}
-              onChange={(v) => onTabataChange({ ...state.tabata, restTime: v })}
+              value={state.intervals.restTime}
+              onChange={(v) =>
+                onIntervalsChange({ ...state.intervals, restTime: v })
+              }
               min={5}
-              max={120}
-              step={5}
+              max={600}
+              step={10}
               label="Rest"
               format={formatSeconds}
             />
             <NumberPicker
-              value={state.tabata.rounds}
-              onChange={(v) => onTabataChange({ ...state.tabata, rounds: v })}
+              value={state.intervals.rounds}
+              onChange={(v) =>
+                onIntervalsChange({ ...state.intervals, rounds: v })
+              }
               min={1}
               max={50}
               step={1}
@@ -275,8 +281,8 @@ export function PortraitSettings({
     );
   };
 
-  const hasSettings = ["countdown", "tabata", "emom", "amrap"].includes(
-    state.mode
+  const hasSettings = ["countdown", "intervals", "emom", "amrap"].includes(
+    state.mode,
   );
   const hasIntroSetting = !["clock", "stopwatch"].includes(state.mode);
 

@@ -20,17 +20,17 @@ export function formatTime(ms: number, showMillis: boolean = false): string {
 export function formatCountdown(state: TimerState): string {
   const remaining = Math.max(
     0,
-    state.countdown.totalTime * 1000 - state.currentTime
+    state.countdown.totalTime * 1000 - state.currentTime,
   );
   return formatTime(remaining);
 }
 
-export function formatTabata(state: TimerState): {
+export function formatIntervals(state: TimerState): {
   time: string;
   round: string;
   phase: string;
 } {
-  const { workTime, restTime } = state.tabata;
+  const { workTime, restTime } = state.intervals;
   const cycleTime = (workTime + restTime) * 1000;
   const currentCycleTime = state.currentTime % cycleTime;
 
@@ -43,7 +43,7 @@ export function formatTabata(state: TimerState): {
 
   return {
     time: formatTime(Math.max(0, phaseTime)),
-    round: `${state.currentRound}/${state.tabata.rounds}`,
+    round: `${state.currentRound}/${state.intervals.rounds}`,
     phase: state.isWorkPhase ? "WORK" : "REST",
   };
 }
@@ -64,7 +64,7 @@ export function formatEmom(state: TimerState): {
 export function formatAmrap(state: TimerState): string {
   const remaining = Math.max(
     0,
-    state.amrap.totalTime * 1000 - state.currentTime
+    state.amrap.totalTime * 1000 - state.currentTime,
   );
   return formatTime(remaining);
 }

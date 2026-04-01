@@ -11,7 +11,7 @@
  * - **clock**: Simple wall clock display (no controls needed)
  * - **stopwatch**: Counts up indefinitely from 0:00
  * - **countdown**: Counts down from a set duration to 0:00
- * - **tabata**: Alternating work/rest intervals for N rounds (e.g., 20s work, 10s rest, 8 rounds)
+ * - **intervals**: Alternating work/rest intervals for N rounds (e.g., 2min work, 1min rest, 5 rounds)
  * - **emom**: "Every Minute On the Minute" - resets each minute for N total minutes
  * - **amrap**: "As Many Rounds As Possible" - counts up for a set duration
  *
@@ -35,9 +35,9 @@
  * - mode: Current timer mode
  * - isRunning: Whether the timer is actively counting
  * - currentTime: Elapsed time in milliseconds (always counts UP internally)
- * - countdown/tabata/emom/amrap: Settings objects for each mode
- * - currentRound: Current round number (tabata)
- * - isWorkPhase: Whether in work or rest phase (tabata)
+ * - countdown/intervals/emom/amrap: Settings objects for each mode
+ * - currentRound: Current round number (intervals)
+ * - isWorkPhase: Whether in work or rest phase (intervals)
  * - currentMinute: Current minute number (emom)
  * - countdownIntro: Intro duration in seconds (0 = disabled)
  * - isInCountdownIntro: True while the intro countdown is active
@@ -45,13 +45,13 @@
  *
  * ## Usage Example
  * ```tsx
- * const { state, toggle, reset, setMode, setTabata, setCountdownIntro } = useTimer();
+ * const { state, toggle, reset, setMode, setIntervals, setCountdownIntro } = useTimer();
  *
- * // Switch to Tabata mode
- * setMode('tabata');
+ * // Switch to Intervals mode
+ * setMode('intervals');
  *
- * // Configure Tabata settings
- * setTabata({ workTime: 30, restTime: 15, rounds: 6 });
+ * // Configure Intervals settings
+ * setIntervals({ workTime: 120, restTime: 60, rounds: 5 });
  *
  * // Set a 5-second countdown intro before workout starts
  * setCountdownIntro(5);
@@ -68,7 +68,7 @@ import { useReducer, useCallback, useRef, useEffect } from "react";
 import {
   TimerState,
   TimerMode,
-  TabataSettings,
+  IntervalsSettings,
   EmomSettings,
   AmrapSettings,
   CountdownSettings,
@@ -85,7 +85,7 @@ type TimerAction =
   | { type: "RESET" }
   | { type: "TICK"; delta: number } // delta = milliseconds since last tick
   | { type: "SET_COUNTDOWN"; settings: CountdownSettings }
-  | { type: "SET_TABATA"; settings: TabataSettings }
+  | { type: "SET_INTERVALS"; settings: IntervalsSettings }
   | { type: "SET_EMOM"; settings: EmomSettings }
   | { type: "SET_AMRAP"; settings: AmrapSettings }
   | { type: "SET_COUNTDOWN_INTRO"; seconds: number };
@@ -99,11 +99,11 @@ const initialState: TimerState = {
   isRunning: false,
   currentTime: 0, // Always in milliseconds, always counts UP
   countdown: { totalTime: 180 }, // 3 minutes default
-  tabata: { workTime: 20, restTime: 10, rounds: 8 }, // Classic Tabata protocol
+  intervals: { workTime: 20, restTime: 10, rounds: 8 }, // Default (classic Tabata-style)
   emom: { intervalTime: 60, totalMinutes: 10 },
   amrap: { totalTime: 600 }, // 10 minutes default
   currentRound: 1, // 1-indexed for display
-  isWorkPhase: true, // Tabata starts with work phase
+  isWorkPhase: true, // Intervals starts with work phase
   currentMinute: 1, // 1-indexed for display
   // Countdown intro defaults
   countdownIntro: 10, // 3 second countdown before workout (0 = disabled)
@@ -225,10 +225,10 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
         }
       }
 
-      // TABATA MODE
+      // INTERVALS MODE
       // Track work/rest phases and round progression
-      if (state.mode === "tabata") {
-        const { workTime, restTime, rounds } = state.tabata;
+      if (state.mode === "intervals") {
+        const { workTime, restTime, rounds } = state.intervals;
         const cycleTime = (workTime + restTime) * 1000; // One full work+rest cycle in ms
 
         // Calculate where we are within the current cycle
@@ -290,8 +290,8 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
     // Settings updates - these can be changed while timer is stopped
     case "SET_COUNTDOWN":
       return { ...state, countdown: action.settings };
-    case "SET_TABATA":
-      return { ...state, tabata: action.settings };
+    case "SET_INTERVALS":
+      return { ...state, intervals: action.settings };
     case "SET_EMOM":
       return { ...state, emom: action.settings };
     case "SET_AMRAP":
@@ -322,7 +322,7 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
  * @returns {Function} toggle - Toggle between start/stop
  * @returns {Function} setMode - Change timer mode
  * @returns {Function} setCountdown - Update countdown settings
- * @returns {Function} setTabata - Update tabata settings
+ * @returns {Function} setIntervals - Update intervals settings
  * @returns {Function} setEmom - Update emom settings
  * @returns {Function} setAmrap - Update amrap settings
  */
@@ -384,28 +384,29 @@ export function useTimer() {
 
   const setMode = useCallback(
     (mode: TimerMode) => dispatch({ type: "SET_MODE", mode }),
-    []
+    [],
   );
 
   const setCountdown = useCallback(
     (settings: CountdownSettings) =>
       dispatch({ type: "SET_COUNTDOWN", settings }),
-    []
+    [],
   );
 
-  const setTabata = useCallback(
-    (settings: TabataSettings) => dispatch({ type: "SET_TABATA", settings }),
-    []
+  const setIntervals = useCallback(
+    (settings: IntervalsSettings) =>
+      dispatch({ type: "SET_INTERVALS", settings }),
+    [],
   );
 
   const setEmom = useCallback(
     (settings: EmomSettings) => dispatch({ type: "SET_EMOM", settings }),
-    []
+    [],
   );
 
   const setAmrap = useCallback(
     (settings: AmrapSettings) => dispatch({ type: "SET_AMRAP", settings }),
-    []
+    [],
   );
 
   /**
@@ -414,7 +415,7 @@ export function useTimer() {
    */
   const setCountdownIntro = useCallback(
     (seconds: number) => dispatch({ type: "SET_COUNTDOWN_INTRO", seconds }),
-    []
+    [],
   );
 
   return {
@@ -425,7 +426,7 @@ export function useTimer() {
     toggle,
     setMode,
     setCountdown,
-    setTabata,
+    setIntervals,
     setEmom,
     setAmrap,
     setCountdownIntro,
